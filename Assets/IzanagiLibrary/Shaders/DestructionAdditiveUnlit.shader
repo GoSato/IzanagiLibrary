@@ -150,9 +150,16 @@ void geom(triangle appdata_t input[3], inout TriangleStream<g2f> stream)
         o.projPos = ComputeScreenPos(o.vertex);
         COMPUTE_EYEDEPTH(o.projPos.z);
 #endif
+		if (destruction > 0.1)
+		{
+			o.color = v.color * destruction * 5.0;
+		}
+		else
+		{
+			o.color = v.color;
+		}
 
-        o.color = v.color;
-        o.color.a *= 1.0 - destruction * _AlphaFactor;
+		o.color.a *= 1.0 - destruction * _AlphaFactor;
         o.texcoord = TRANSFORM_TEX(v.texcoord, _MainTex);
         UNITY_TRANSFER_FOG(o, o.vertex);
 

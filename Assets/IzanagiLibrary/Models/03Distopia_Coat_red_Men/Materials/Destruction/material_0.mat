@@ -8,7 +8,7 @@ Material:
   m_PrefabInternal: {fileID: 0}
   m_Name: material_0
   m_Shader: {fileID: 4800000, guid: a0506d145ae8a464d84ea6a746f92da3, type: 3}
-  m_ShaderKeywords: _METHOD_PROPERTY
+  m_ShaderKeywords: _METHOD_CAMERA
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -55,29 +55,29 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AlphaFactor: 1
+    - _AlphaFactor: 0.973
     - _BumpScale: 1
     - _Cutoff: 0.5
-    - _Destruction: 0
+    - _Destruction: 0.362
     - _DetailNormalMapScale: 1
     - _DstBlend: 0
-    - _EndDistance: 0.3
+    - _EndDistance: 0.5
     - _GlossMapScale: 1
     - _Glossiness: 0
     - _GlossyReflections: 1
     - _InvFade: 1
     - _Metallic: 0
-    - _Method: 0
+    - _Method: 1
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _PositionFactor: 0.2
-    - _RotationFactor: 1
-    - _ScaleFactor: 1
+    - _PositionFactor: 0.278
+    - _RotationFactor: 0.838
+    - _ScaleFactor: 0.217
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _StartDistance: 0.6
+    - _StartDistance: 1.5
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
