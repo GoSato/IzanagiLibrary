@@ -193,7 +193,8 @@ Tags
     "PreviewType" = "Plane"
 }
 
-Blend SrcAlpha One
+//Blend SrcAlpha One // 描画しようとしている色 * alpha + 現在の色 * 1 
+Blend SrcAlpha OneMinusSrcAlpha // 一般的なやつ
 ColorMask RGB
 //Cull Off Lighting Off ZWrite Off
 Lighting Off
