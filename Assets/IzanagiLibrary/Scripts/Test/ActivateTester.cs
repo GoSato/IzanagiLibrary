@@ -15,16 +15,16 @@ public class ActivateTester : MonoBehaviour
     private float _goalValue = 2.0f;
     [SerializeField]
     private float _duration = 2.0f;
+    [SerializeField]
+    private bool _activeOnAwake = false;
 
     private bool _isActivated = false;
 
-    private void Start()
+    private void Awake()
     {
-        if (_targetObject.activeInHierarchy)
-        {
-            _targetObject.SetActive(false);
-        }
-        _isActivated = false;
+        _targetObject.SetActive(_activeOnAwake);
+
+        _isActivated = _activeOnAwake;
     }
 
     private void Update()
