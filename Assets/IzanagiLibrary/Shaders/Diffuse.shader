@@ -13,8 +13,8 @@
             Tags {"LightMode"="ForwardBase"}
         
             CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
+            #pragma vertex vert // 頂点シェーダーの関数を指定
+            #pragma fragment frag // ピクセルシェーダーの関数を指定
             #include "UnityCG.cginc"
             #include "UnityLightingCommon.cginc"
 
@@ -25,13 +25,16 @@
             {
                 float2 uv : TEXCOORD0;
                 fixed4 diff : COLOR0;
-                float4 vertex : SV_POSITION;
+                float4 vertex : SV_POSITION;　// 頂点シェーダーで計算した頂点座標を代入する
             };
 
+            // 主に座標変換を行う
+            // appdata_base構造体を引数にとる
             v2f vert (appdata_base v)
             {
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);
+                o.vertex = UnityObjectToClipPos(v.vertex);　// 3次元上の頂点をディスプレイ上のどこに描画するか座標変換を行う
+                                                            // fragmentシェーダーに渡す前に必ず変換する必要がある
                 o.uv = v.texcoord;
                 half3 worldNormal = UnityObjectToWorldNormal(v.normal);
                 half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
@@ -42,6 +45,8 @@
             
             sampler2D _MainTex;
 
+            // 主にピクセルの色の計算を行う
+            // 返却する値はRGBAの4次元の色になる
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = _Color * tex2D(_MainTex, i.uv) * _DiffuseFactor;
