@@ -2,9 +2,10 @@
 {
     Properties
     {
-        [NoScaleOffset] _MainTex ("Texture", 2D) = "white" {}
+        // [NoScaleOffset] _MainTex ("Texture", 2D) = "white" {}
+        _MainTex("Texture", 2D) = "white" {}
 		_Color("Color", Color) = (0.5, 0.5, 0.5, 0.5)
-		_DiffuseFactor("Diffuse Factor", Range(0.0, 2.0)) = 0.5
+        _Shininess("Shininess", float) = 10
     }
     SubShader
     {
@@ -20,37 +21,55 @@
 
 			fixed4 _Color;
 			fixed _DiffuseFactor;
+            half _Shininess;
 
             struct v2f
             {
                 float2 uv : TEXCOORD0;
-                fixed4 diff : COLOR0;
-                float4 vertex : SV_POSITION;　// 頂点シェーダーで計算した頂点座標を代入する
+                float4 vertex : SV_POSITION; // 頂点シェーダーで計算した頂点座標を代入する
+                half3 normal : TEXCOORD1;
+                half3 halfDir : TEXCOORD2;
             };
+
+            sampler2D _MainTex;
+            half4 _MainTex_ST; // TilingとOffsetの情報を取得するのに必要
 
             // 主に座標変換を行う
             // appdata_base構造体を引数にとる
             v2f vert (appdata_base v)
             {
                 v2f o;
-                o.vertex = UnityObjectToClipPos(v.vertex);　// 3次元上の頂点をディスプレイ上のどこに描画するか座標変換を行う
+                o.vertex = UnityObjectToClipPos(v.vertex); // 3次元上の頂点をディスプレイ上のどこに描画するか座標変換を行う
                                                             // fragmentシェーダーに渡す前に必ず変換する必要がある
-                o.uv = v.texcoord;
-                half3 worldNormal = UnityObjectToWorldNormal(v.normal);
-                half nl = max(0, dot(worldNormal, _WorldSpaceLightPos0.xyz));
-                o.diff = nl * _LightColor0;
-                o.diff.rgb += ShadeSH9(half4(worldNormal,1));
+                // o.uv = v.texcoord; // 
+                o.uv = TRANSFORM_TEX(v.texcoord, _MainTex); // タイリングとオフセットを考慮したuv値を計算
+                half3 worldNormal = UnityObjectToWorldNormal(v.normal); // 正規化済み
+                o.normal = worldNormal;
+
+                // ハーフベクトルを求める
+                float4 worldPos = mul(unity_ObjectToWorld, v.vertex);
+                half3 eyeDir = normalize(_WorldSpaceCameraPos.xyz - worldPos.xyz);
+                o.halfDir = normalize(_WorldSpaceLightPos0.xyz + eyeDir);
+
                 return o;
             }
             
-            sampler2D _MainTex;
-
             // 主にピクセルの色の計算を行う
             // 返却する値はRGBAの4次元の色になる
             fixed4 frag (v2f i) : SV_Target
             {
-                fixed4 col = _Color * tex2D(_MainTex, i.uv) * _DiffuseFactor;
-                col *= i.diff;
+                float4 ambientLight = UNITY_LIGHTMODEL_AMBIENT;
+
+                half3 diffuse = max(0, dot(i.normal, _WorldSpaceLightPos0.xyz)) * _LightColor0 + ambientLight; // _WroldSpaceLightPos0 : ディレクショナルライトの方向
+                
+                half3 specular = pow(max(0, dot(i.normal, i.halfDir)), _Shininess) * _LightColor0;
+                
+                fixed4 col;
+                col = tex2D(_MainTex, i.uv) * _Color;
+                col.rbg *= saturate(diffuse + specular);
+                
+                // 環境光(アンビエント)の影響を受けられるようにする,環境光は加算
+                                                        // 最終的に色を出力する段階で加算する
                 return col;
             }
             ENDCG
